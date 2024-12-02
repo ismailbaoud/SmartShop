@@ -1,194 +1,357 @@
-// package com.ismail.smartShop.service;
+package com.ismail.smartShop.service;
 
-// import static org.junit.jupiter.api.Assertions.*;
-// import static org.mockito.ArgumentMatchers.any;
-// import static org.mockito.ArgumentMatchers.anyLong;
-// import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
-// import java.util.List;
-// import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.DisplayName;
-// import org.junit.jupiter.api.Test;
-// import org.junit.jupiter.api.extension.ExtendWith;
-// import org.mockito.InjectMocks;
-// import org.mockito.Mock;
-// import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-// import com.ismail.smartShop.dto.client.request.ClientRequest;
-// import com.ismail.smartShop.dto.client.request.ClientFideliteChangeRequest;
-// import com.ismail.smartShop.dto.client.response.ClientResponse;
-// import com.ismail.smartShop.mapper.ClientMapper;
-// import com.ismail.smartShop.model.Client;
-// import com.ismail.smartShop.model.enums.NiveauFidelite;
-// import com.ismail.smartShop.repository.ClientRepository;
-// import com.ismail.smartShop.service.implementation.ClientServiceImpl;
+import com.ismail.smartShop.dto.client.request.ClientFideliteChangeRequest;
+import com.ismail.smartShop.dto.client.request.ClientRequest;
+import com.ismail.smartShop.dto.client.response.ClientResponse;
+import com.ismail.smartShop.exception.client.ClientNotFoundException;
+import com.ismail.smartShop.helper.passwordHasher;
+import com.ismail.smartShop.mapper.ClientMapper;
+import com.ismail.smartShop.model.Client;
+import com.ismail.smartShop.model.User;
+import com.ismail.smartShop.model.enums.NiveauFidelite;
+import com.ismail.smartShop.model.enums.Role;
+import com.ismail.smartShop.repository.ClientRepository;
+import com.ismail.smartShop.repository.UserRepository;
+import com.ismail.smartShop.service.implementation.ClientServiceImpl;
 
-// @ExtendWith(MockitoExtension.class)
-// class ClientServiceTest {
+import jakarta.servlet.http.HttpSession;
 
-//     @Mock
-//     private ClientRepository clientRepository;
+@ExtendWith(MockitoExtension.class)
+class ClientServiceTest {
 
-//     @Mock
-//     private ClientMapper clientMapper;
+    @Mock
+    private ClientRepository clientRepository;
 
-//     @InjectMocks
-//     private ClientServiceImpl clientService;
+    @Mock
+    private ClientMapper clientMapper;
 
-//     private Client client;
-//     private ClientRequest clientRequest;
-//     private ClientResponse clientResponse;
+    @Mock
+    private UserRepository userRepository;
 
-//     @BeforeEach
-//     void setUp() {
+    @Mock
+    private passwordHasher passwordEncoder;
 
-//         client = Client.builder()
-//                 .id(1L)
-//                 .nom("Ismail")
-//                 .email("email@gmail.com")
-//                 .niveauDeFidelite(NiveauFidelite.BASIC)
-//                 .build();
+    @Mock
+    private HttpSession session;
 
-//         clientRequest = ClientRequest.builder()
-//                 .nom("Ismail")
-//                 .email("email@gmail.com")
-//                 .build();
+    @InjectMocks
+    private ClientServiceImpl clientService;
 
-//         clientResponse = new ClientResponse(
-//                 1L,
-//                 "Ismail",
-//                 "email@gmail.com",
-//                 0,
-//                 0.0,
-//                 NiveauFidelite.BASIC,
-//                 null,
-//                 null
-//         );
-//     }
+    private Client client;
+    private ClientRequest clientRequest;
+    private ClientResponse clientResponse;
+    private User user;
 
-//     // ----------------------------------------------------------------------------------
+    @BeforeEach
+    void setUp() {
+        client = new Client();
+        client.setId(1L);
+        client.setNom("John Doe");
+        client.setEmail("john@test.com");
+        client.setNiveauDeFidelite(NiveauFidelite.BASIC);
+        client.setTotalCommandes(0);
+        client.setTotalDepense(0.0);
 
-//     @Test
-//     @DisplayName("Should create a new client")
-//     void itShouldReturnCreatedClient() {
+        clientRequest = ClientRequest.builder()
+            .nom("John Doe")
+            .email("john@test.com")
+            .password("password123")
+            .build();
 
-//         when(clientMapper.toEntity(clientRequest)).thenReturn(client);
-//         when(clientRepository.save(any(Client.class))).thenReturn(client);
-//         when(clientMapper.toDto(client)).thenReturn(clientResponse);
+        clientResponse = new ClientResponse(
+            1L,
+            "John Doe",
+            "john@test.com",
+            0,
+            0.0,
+            NiveauFidelite.BASIC,
+            null,
+            null
+        );
 
-//         ClientResponse result = clientService.createClient(clientRequest);
+        user = new User();
+        user.setId(1L);
+        user.setUserName("john@test.com");
+        user.setRole(Role.CLIENT);
+    }
 
-//         assertNotNull(result);
-//         assertEquals(clientRequest.getEmail(), result.email());
-//         assertEquals(clientRequest.getNom(), result.nom());
+    @Test
+    void createClient_ShouldCreateClientAndUser_WhenValidRequest() {
+        // Arrange
+        when(clientMapper.toEntity(clientRequest)).thenReturn(client);
+        when(clientRepository.save(any(Client.class))).thenReturn(client);
+        when(passwordEncoder.hash(anyString())).thenReturn("hashedPassword");
+        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(clientMapper.toDto(client)).thenReturn(clientResponse);
 
-//         verify(clientMapper).toEntity(clientRequest);
-//         verify(clientRepository).save(client);
-//         verify(clientMapper).toDto(client);
-//     }
+        // Act
+        ClientResponse result = clientService.createClient(clientRequest);
 
-//     // ----------------------------------------------------------------------------------
+        // Assert
+        assertNotNull(result);
+        assertEquals(clientResponse.id(), result.id());
+        assertEquals(NiveauFidelite.BASIC, client.getNiveauDeFidelite());
+        verify(clientRepository, times(1)).save(any(Client.class));
+        verify(userRepository, times(1)).save(any(User.class));
+        verify(passwordEncoder, times(1)).hash("password123");
+    }
 
-//     @Test
-//     @DisplayName("Should return client by ID")
-//     void itShouldReturnClientById() {
+    @Test
+    void getClientById_ShouldReturnClient_WhenClientExists() {
+        // Arrange
+        when(clientRepository.findById(1L)).thenReturn(Optional.of(client));
+        when(clientMapper.toDto(client)).thenReturn(clientResponse);
 
-//         when(clientRepository.findById(1L)).thenReturn(Optional.of(client));
-//         when(clientMapper.toDto(client)).thenReturn(clientResponse);
+        // Act
+        ClientResponse result = clientService.getClientById(1L);
 
-//         ClientResponse result = clientService.getClientById(1L);
+        // Assert
+        assertNotNull(result);
+        assertEquals(1L, result.id());
+        verify(clientRepository, times(1)).findById(1L);
+    }
 
-//         assertNotNull(result);
-//         assertEquals(1L, result.id());
+    @Test
+    void getClientById_ShouldThrowException_WhenClientNotFound() {
+        // Arrange
+        when(clientRepository.findById(999L)).thenReturn(Optional.empty());
 
-//         verify(clientRepository).findById(1L);
-//         verify(clientMapper).toDto(client);
-//     }
+        // Act & Assert
+        assertThrows(ClientNotFoundException.class, () -> clientService.getClientById(999L));
+        verify(clientRepository, times(1)).findById(999L);
+    }
 
-//     // ----------------------------------------------------------------------------------
+    @Test
+    void updateClient_ShouldUpdateClient_WhenClientExists() {
+        // Arrange
+        ClientRequest updateRequest = ClientRequest.builder()
+            .nom("Jane Doe")
+            .email("jane@test.com")
+            .build();
 
-//     @Test
-//     @DisplayName("Should update client successfully")
-//     void itShouldUpdateClient() {
+        when(clientRepository.findById(1L)).thenReturn(Optional.of(client));
+        when(clientRepository.save(client)).thenReturn(client);
+        when(clientMapper.toDto(client)).thenReturn(clientResponse);
 
-//         when(clientRepository.findById(1L)).thenReturn(Optional.of(client));
-//         when(clientRepository.save(any(Client.class))).thenReturn(client);
-//         when(clientMapper.toDto(client)).thenReturn(clientResponse);
+        // Act
+        ClientResponse result = clientService.updateClientr(1L, updateRequest);
 
-//         ClientResponse result = clientService.updateClientr(1L, clientRequest);
+        // Assert
+        assertNotNull(result);
+        assertEquals("Jane Doe", client.getNom());
+        assertEquals("jane@test.com", client.getEmail());
+        verify(clientRepository, times(1)).findById(1L);
+        verify(clientRepository, times(1)).save(client);
+    }
 
-//         assertNotNull(result);
-//         assertEquals(clientRequest.getNom(), result.nom());
+    @Test
+    void updateClient_ShouldThrowException_WhenClientNotFound() {
+        // Arrange
+        when(clientRepository.findById(999L)).thenReturn(Optional.empty());
 
-//         verify(clientRepository).findById(1L);
-//         verify(clientRepository).save(client);
-//     }
+        // Act & Assert
+        assertThrows(ClientNotFoundException.class, () -> clientService.updateClientr(999L, clientRequest));
+    }
 
-//     // ----------------------------------------------------------------------------------
+    @Test
+    void getAllClients_ShouldReturnListOfClients() {
+        // Arrange
+        Client client2 = new Client();
+        client2.setId(2L);
+        List<Client> clients = Arrays.asList(client, client2);
+        
+        when(clientRepository.findAll()).thenReturn(clients);
+        when(clientMapper.toDto(any(Client.class))).thenReturn(clientResponse);
 
-//     @Test
-//     @DisplayName("Should return all clients")
-//     void itShouldReturnAllClients() {
+        // Act
+        List<ClientResponse> result = clientService.getAllClients();
 
-//         when(clientRepository.findAll()).thenReturn(List.of(client));
-//         when(clientMapper.toDto(client)).thenReturn(clientResponse);
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        verify(clientRepository, times(1)).findAll();
+    }
 
-//         List<ClientResponse> result = clientService.getAllClients();
+    @Test
+    void changeNiveauDeFidelite_ShouldUpdateFidelite_WhenClientExists() {
+        // Arrange
+        ClientFideliteChangeRequest fideliteRequest = new ClientFideliteChangeRequest();
+        fideliteRequest.setNiveauDeFidelite("GOLD");
 
-//         assertEquals(1, result.size());
-//         assertEquals(client.getEmail(), result.get(0).email());
+        when(clientRepository.findById(1L)).thenReturn(Optional.of(client));
+        when(clientMapper.toDto(client)).thenReturn(clientResponse);
 
-//         verify(clientRepository).findAll();
-//     }
+        // Act
+        ClientResponse result = clientService.changeNiveauDeFidelite(1L, fideliteRequest);
 
-//     // ----------------------------------------------------------------------------------
+        // Assert
+        assertNotNull(result);
+        assertEquals(NiveauFidelite.GOLD, client.getNiveauDeFidelite());
+        verify(clientRepository, times(1)).findById(1L);
+    }
 
-//     @Test
-//     @DisplayName("Should change client's loyalty level")
-//     void itShouldChangeNiveauDeFidelite() {
+    @Test
+    void changeNiveauDeFidelite_ShouldThrowException_WhenClientNotFound() {
+        // Arrange
+        ClientFideliteChangeRequest fideliteRequest = new ClientFideliteChangeRequest();
+        fideliteRequest.setNiveauDeFidelite("GOLD");
+        
+        when(clientRepository.findById(999L)).thenReturn(Optional.empty());
 
-//         ClientFideliteChangeRequest req = new ClientFideliteChangeRequest("PLATINIUM");
+        // Act & Assert
+        assertThrows(ClientNotFoundException.class, () -> clientService.changeNiveauDeFidelite(999L, fideliteRequest));
+    }
 
-//         // Mock repository and mapper
-//         when(clientRepository.findById(1L)).thenReturn(Optional.of(client));
-//         when(clientRepository.save(any(Client.class))).thenReturn(client);
+    @Test
+    void deleteClient_ShouldDeleteClient() {
+        // Arrange
+        doNothing().when(clientRepository).deleteById(1L);
 
-//         // Update the expected response loyalty level
-//         ClientResponse updatedResponse = new ClientResponse(
-//                 1L,
-//                 "Ismail",
-//                 "email@gmail.com",
-//                 0,
-//                 0.0,
-//                 NiveauFidelite.PLATINIUM,
-//                 null,
-//                 null
-//         );
+        // Act
+        clientService.deleteClient(1L);
 
-//         when(clientMapper.toDto(client)).thenReturn(updatedResponse);
+        // Assert
+        verify(clientRepository, times(1)).deleteById(1L);
+    }
 
-//         // Call service
-//         ClientResponse result = clientService.changeNiveauDeFidelite(1L, req);
+    @Test
+    void changeFidelite_ShouldUpgradeToSilver_WhenBasicWith3Orders() {
+        // Arrange
+        client.setNiveauDeFidelite(NiveauFidelite.BASIC);
+        client.setTotalCommandes(3);
+        client.setTotalDepense(500.0);
 
-//         assertNotNull(result);
-//         assertEquals(NiveauFidelite.PLATINIUM, result.niveauFidelite());
+        // Act
+        Client result = clientService.changeFidelite(client);
 
-//         verify(clientRepository).findById(1L);
-//         verify(clientRepository).save(client);
-//     }
+        // Assert
+        assertEquals(NiveauFidelite.SILVER, result.getNiveauDeFidelite());
+    }
 
-//     // ----------------------------------------------------------------------------------
+    @Test
+    void changeFidelite_ShouldUpgradeToSilver_WhenBasicWith1000Spent() {
+        // Arrange
+        client.setNiveauDeFidelite(NiveauFidelite.BASIC);
+        client.setTotalCommandes(1);
+        client.setTotalDepense(1000.0);
 
-//     @Test
-//     @DisplayName("Should delete a client by ID")
-//     void itShouldDeleteClient() {
+        // Act
+        Client result = clientService.changeFidelite(client);
 
-//         doNothing().when(clientRepository).deleteById(anyLong());
+        // Assert
+        assertEquals(NiveauFidelite.SILVER, result.getNiveauDeFidelite());
+    }
 
-//         clientService.deleteClient(1L);
+    @Test
+    void changeFidelite_ShouldUpgradeToGold_WhenSilverWith10Orders() {
+        // Arrange
+        client.setNiveauDeFidelite(NiveauFidelite.SILVER);
+        client.setTotalCommandes(10);
+        client.setTotalDepense(3000.0);
 
-//         verify(clientRepository).deleteById(1L);
-//     }
-// }
+        // Act
+        Client result = clientService.changeFidelite(client);
+
+        // Assert
+        assertEquals(NiveauFidelite.GOLD, result.getNiveauDeFidelite());
+    }
+
+    @Test
+    void changeFidelite_ShouldUpgradeToGold_WhenSilverWith5000Spent() {
+        // Arrange
+        client.setNiveauDeFidelite(NiveauFidelite.SILVER);
+        client.setTotalCommandes(5);
+        client.setTotalDepense(5000.0);
+
+        // Act
+        Client result = clientService.changeFidelite(client);
+
+        // Assert
+        assertEquals(NiveauFidelite.GOLD, result.getNiveauDeFidelite());
+    }
+
+    @Test
+    void changeFidelite_ShouldUpgradeToPlatinium_WhenGoldWith20Orders() {
+        // Arrange
+        client.setNiveauDeFidelite(NiveauFidelite.GOLD);
+        client.setTotalCommandes(20);
+        client.setTotalDepense(10000.0);
+
+        // Act
+        Client result = clientService.changeFidelite(client);
+
+        // Assert
+        assertEquals(NiveauFidelite.PLATINIUM, result.getNiveauDeFidelite());
+    }
+
+    @Test
+    void changeFidelite_ShouldUpgradeToPlatinium_WhenGoldWith15000Spent() {
+        // Arrange
+        client.setNiveauDeFidelite(NiveauFidelite.GOLD);
+        client.setTotalCommandes(10);
+        client.setTotalDepense(15000.0);
+
+        // Act
+        Client result = clientService.changeFidelite(client);
+
+        // Assert
+        assertEquals(NiveauFidelite.PLATINIUM, result.getNiveauDeFidelite());
+    }
+
+    @Test
+    void changeFidelite_ShouldNotUpgrade_WhenConditionsNotMet() {
+        // Arrange
+        client.setNiveauDeFidelite(NiveauFidelite.BASIC);
+        client.setTotalCommandes(2);
+        client.setTotalDepense(500.0);
+
+        // Act
+        Client result = clientService.changeFidelite(client);
+
+        // Assert
+        assertEquals(NiveauFidelite.BASIC, result.getNiveauDeFidelite());
+    }
+
+    @Test
+    void getProfile_ShouldReturnClientProfile_WhenUserInSession() {
+        // Arrange
+        when(session.getAttribute("USER")).thenReturn(user);
+        when(clientRepository.findById(1L)).thenReturn(Optional.of(client));
+        when(clientMapper.toDto(client)).thenReturn(clientResponse);
+
+        // Act
+        ClientResponse result = clientService.getProfile(session);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1L, result.id());
+        verify(session, times(1)).getAttribute("USER");
+        verify(clientRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void getProfile_ShouldThrowException_WhenClientNotFound() {
+        // Arrange
+        when(session.getAttribute("USER")).thenReturn(user);
+        when(clientRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(ClientNotFoundException.class, () -> clientService.getProfile(session));
+    }
+}
