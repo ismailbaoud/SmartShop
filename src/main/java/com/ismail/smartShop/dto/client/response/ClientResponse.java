@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 
 import com.ismail.smartShop.model.enums.NiveauFidelite;
 
-import lombok.Data;
-
 
 public record ClientResponse(
     Long id,
