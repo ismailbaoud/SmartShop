@@ -10,11 +10,35 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.ismail.smartShop.dto.ErrorResponse;
+import com.ismail.smartShop.exception.client.ClientAlreadyExistException;
+import com.ismail.smartShop.exception.client.ClientNotFoundException;
+import com.ismail.smartShop.exception.product.ProductAlreadyExistsException;
+import com.ismail.smartShop.exception.product.ProductNotFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestControllerAdvice
 public class GlobalExceptionHnadler {
+    
+    @ExceptionHandler(ProductAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleProductAlreadyExists(ProductAlreadyExistsException ex, HttpServletRequest req) {
+        return buildError(ex.getMessage(), req, ex.getStatus());
+    }
+    
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleProductNotFoundException(ProductNotFoundException ex, HttpServletRequest req) {
+        return buildError(ex.getMessage(), req, ex.getStatus());
+    }
+    
+    @ExceptionHandler(ClientNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleClientNotFoundException(ClientNotFoundException ex, HttpServletRequest req) {
+        return buildError(ex.getMessage(), req, ex.getStatus());
+    }
+    
+    @ExceptionHandler(ClientAlreadyExistException.class)
+    public ResponseEntity<ErrorResponse> handleClientAlreadyExistException(ClientAlreadyExistException ex, HttpServletRequest req) {
+        return buildError(ex.getMessage(), req, ex.getStatus());
+    }
     
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest req) {
