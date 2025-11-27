@@ -1,6 +1,5 @@
 package com.ismail.smartShop.model;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
@@ -24,9 +23,7 @@ public class Promo {
 
     private Integer discountPercent;
     
-    private BigDecimal amount;
-
-    private Integer usedTimes;
+    private Integer usedTimes = 0;
 
     private LocalDateTime expiresAt;
 

@@ -26,6 +26,7 @@ public class ClientServiceImpl implements ClientService{
     @Override
     public ClientResponse createClient(ClientRequest cr) {
         Client client = clientMapper.toEntity(cr);
+        client.setNiveauDeFidelite(NiveauFidelite.BASIC);
         return clientMapper.toDto(clientRepository.save(client));
     }
 

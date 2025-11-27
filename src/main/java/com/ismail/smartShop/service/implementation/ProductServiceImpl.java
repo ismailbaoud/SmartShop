@@ -54,5 +54,15 @@ public class ProductServiceImpl implements ProductService{
     public List<ProductResponse> getAllProducts() {
         return productRepository.findAll().stream().map(p-> productMapper.toDto(p)).toList();
     }
+
+    @Override
+    public Integer discountProducts(Long id, Integer pQty) {
+        return productRepository.discountStock(id, pQty);
+    }
+
+    @Override
+    public Integer addProducts(Long id, Integer pQty) {
+        return productRepository.addStock(id, pQty);
+    }
     
 }

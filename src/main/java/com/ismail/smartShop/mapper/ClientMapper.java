@@ -10,4 +10,5 @@ import com.ismail.smartShop.model.Client;
 public interface ClientMapper {
     Client toEntity(ClientRequest clientRequest);
     ClientResponse toDto(Client client);
+    Client fromResponse(ClientResponse client);
 }
