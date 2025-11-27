@@ -1,6 +1,5 @@
 package com.ismail.smartShop.dto.orderItem.Request;
 
-import com.ismail.smartShop.model.Product;
 
 import lombok.Data;
 

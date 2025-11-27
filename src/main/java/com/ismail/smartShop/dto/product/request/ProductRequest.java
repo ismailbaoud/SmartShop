@@ -20,7 +20,7 @@ public class ProductRequest {
 
     @NotNull(message = "unit price is required")
     @Positive
-    private BigDecimal prixUnit;
+    private Double prixUnit;
 
     @NotNull(message = "stock quantity is required")
     @Positive
