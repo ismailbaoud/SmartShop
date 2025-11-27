@@ -6,7 +6,7 @@ import com.ismail.smartShop.dto.promo.request.PromoRequest;
 import com.ismail.smartShop.dto.promo.response.PromoResponse;
 import com.ismail.smartShop.model.Promo;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface PromoMapper {
     Promo toEntity(PromoRequest req);
     PromoResponse toDto(Promo p);
