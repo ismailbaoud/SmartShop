@@ -1,14 +1,8 @@
 package com.ismail.smartShop.service;
 
-import org.springframework.stereotype.Service;
+import com.ismail.smartShop.dto.order.request.OrderRequest;
+import com.ismail.smartShop.dto.order.response.OrderResponse;
 
-import com.ismail.smartShop.repository.OrderRepository;
-
-import lombok.RequiredArgsConstructor;
-
-@Service
-@RequiredArgsConstructor
-public class OrderService {
-    private final OrderRepository orderRepository;
-
+public interface OrderService {
+    public OrderResponse createOrder(OrderRequest orderRequest);
 }
