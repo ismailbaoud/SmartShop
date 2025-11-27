@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import com.ismail.smartShop.model.enums.NiveauFidelite;
 
-
 public record ClientResponse(
     Long id,
     String nom,
@@ -13,7 +12,7 @@ public record ClientResponse(
     Integer totalCommandes,
     Double TotalDepense,
 
-    NiveauFidelite niveauFidelite,
+    NiveauFidelite niveauDeFidelite,
 
     LocalDateTime firstOrderDate,
     LocalDateTime lastOrderDate
