@@ -22,13 +22,15 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long order;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
     private Integer quantitie;
-    private BigDecimal prixUnitaire;
-    private BigDecimal lineTotal;
+    private Double prixUnitaire;
+    private Double lineTotal;
     
 }

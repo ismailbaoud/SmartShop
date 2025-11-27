@@ -27,7 +27,7 @@ public class Product {
 
     private String nom;
 
-    private  BigDecimal  prixUnit;
+    private  Double  prixUnit;
 
     private Integer stockQuantitie;
 
