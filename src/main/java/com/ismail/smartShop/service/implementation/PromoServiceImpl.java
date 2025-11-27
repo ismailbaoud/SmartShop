@@ -32,7 +32,16 @@ public class PromoServiceImpl implements PromoService {
 
     @Override
     public Boolean validatePromoCode(String code) {
-        return promoRepository.findPromoByCode(code).getExpiresAt().isAfter(LocalDateTime.now()) ? true : false;
+        Promo p = promoRepository.findPromoByCode(code);
+        if(p != null) {
+            return p.getExpiresAt().isAfter(LocalDateTime.now()) ? true : false;
+        }
+        return false;
+    }
+
+    @Override
+    public PromoResponse getPromoByCode(String code) {
+        return promoMapper.toDto(promoRepository.findPromoByCode(code));
     }
     
 }
