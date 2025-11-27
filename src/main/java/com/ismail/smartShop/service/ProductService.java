@@ -16,4 +16,8 @@ public interface ProductService {
     void deleteProduct(Long id);
     
     List<ProductResponse> getAllProducts();
+
+    Integer discountProducts(Long id , Integer pQty);
+    
+    Integer addProducts(Long id , Integer pQty);
 }
