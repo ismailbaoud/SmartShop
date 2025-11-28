@@ -2,6 +2,7 @@ package com.ismail.smartShop.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ismail.smartShop.model.enums.NiveauFidelite;
 
 import jakarta.persistence.Entity;
@@ -34,7 +35,7 @@ public class Client {
     String email;
     
     @Enumerated(EnumType.STRING)
-    NiveauFidelite niveauDeFidelite;
+    private NiveauFidelite niveauDeFidelite;
 
     private Integer totalCommandes = 0;
     private Double TotalDepense = 0.0;
@@ -43,5 +44,6 @@ public class Client {
     User user;
 
     @OneToMany(mappedBy = "client")
+    @JsonBackReference
     private List<Order> orders;
 }

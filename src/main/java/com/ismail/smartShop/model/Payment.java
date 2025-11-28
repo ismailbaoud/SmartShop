@@ -1,11 +1,17 @@
 package com.ismail.smartShop.model;
 
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources.Chain.Strategy;
 
+import com.ismail.smartShop.model.enums.PaymentMethod;
+import com.ismail.smartShop.model.enums.PaymentStatus;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,11 +32,10 @@ public class Payment {
 
     private String numeroPaiement;
 
-    private BigDecimal Amount;
-
-    private String method;
-
-    private String reference;
+    private Double amount;
+    
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod method;
 
     private String banque;
 
@@ -38,8 +43,8 @@ public class Payment {
 
     private LocalDateTime dateEncaissement;
 
-    private String status;
-
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus status;
 
     @ManyToOne
     @JoinColumn(name = "order_id")

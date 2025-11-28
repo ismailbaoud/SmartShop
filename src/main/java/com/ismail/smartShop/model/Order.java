@@ -5,11 +5,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ismail.smartShop.model.enums.OrderStatus;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,6 +37,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "client_id")
+    @JsonManagedReference
     private Client client;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
@@ -45,15 +49,12 @@ public class Order {
 
     private Double subTotal;
 
-    private Double htAfterDiscount;
-
     @Column(nullable = true)
     private Double tva;
 
     private Double totalTTC;
 
-    private String promocode;
-
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
     private Double montant_restant;

@@ -44,7 +44,7 @@ public class ClientController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ClientResponse> getMethodName(@PathVariable Long id) {
+    public ResponseEntity<ClientResponse> getClientById(@PathVariable Long id) {
         ClientResponse client = clientService.getClientById(id);
         return ResponseEntity.ok().body(client);
     }
@@ -57,8 +57,10 @@ public class ClientController {
     }
 
     @PutMapping("/{id}/fidelite")
-    public ResponseEntity<ClientResponse> putMethodName(@Valid @PathVariable Long id, @RequestBody ClientFideliteChangeRequest fidelite) {
+    public ResponseEntity<ClientResponse> changeFidelite(@Valid @PathVariable Long id, @RequestBody ClientFideliteChangeRequest fidelite) {
         ClientResponse clientResponse = clientService.changeNiveauDeFidelite(id, fidelite);
         return ResponseEntity.ok().body(clientResponse);
     }
+
+    
 }
