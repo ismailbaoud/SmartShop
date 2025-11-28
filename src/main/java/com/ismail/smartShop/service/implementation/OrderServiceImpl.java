@@ -2,6 +2,7 @@ package com.ismail.smartShop.service.implementation;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -46,7 +47,6 @@ public class OrderServiceImpl implements OrderService {
         .sum();        
         Double htAfterFidelite = totalAfterFideliteHandle(client, initTotal);
         Double htAfterPromo = promoValid ? totalAfterCodePromo(htAfterFidelite, orderRequest.getPromo()) : htAfterFidelite;
-        Double htAfterDiscount = initTotal - htAfterPromo;
         Double tvaPercent = orderRequest.getTva() != null ? orderRequest.getTva() : 20.0;
         Double totalTTC = htAfterPromo * (1 + tvaPercent / 100);
         
@@ -54,9 +54,8 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderMapper.toEntity(orderRequest);
         order.setClient(clientMapper.fromResponse(client));
         order.setDateOrder(LocalDateTime.now());
-        order.setHtAfterDiscount(htAfterDiscount);
         order.setMontant_restant(totalTTC);
-        order.setPromocode(orderRequest.getPromo());
+        if(promoValid)  order.setPromo(orderRequest.getPromo());
         order.setStatus(OrderStatus.PANDING);
         order.setSubTotal(initTotal);
         order.setTotalTTC(totalTTC);
@@ -73,13 +72,6 @@ public class OrderServiceImpl implements OrderService {
         );
 
         return orderRes;
-    }
-
-    private Double calculateTVA(Double total, Double t) {
-        Double newTva = t != null ? t : 20;
-        Double newTotal = total + (total * newTva/100);
-        System.out.println(newTva +" " + newTotal);
-        return newTotal;
     }
 
     private Double totalAfterFideliteHandle(ClientResponse client , Double total) {
@@ -99,4 +91,34 @@ public class OrderServiceImpl implements OrderService {
         Double newTotal = total - (total * promo.discountPercent()/100);
         return newTotal;
     }
+
+    @Override
+    public List<OrderResponse> getAllOrders() {
+        return orderRepository.findAll().stream()
+        .map(a -> orderMapper.toDto(a)).toList();
+    }
+
+    @Override
+    public List<OrderResponse> getAllOrdersOfClient(Long id) {
+        return orderRepository.findAll().stream()
+        .filter(a -> a.getId() == id)
+        .map(a -> orderMapper.toDto(a)).toList();
+    }
+
+    @Override
+    public OrderResponse cancelOrder(Long id) {
+        Order order = orderRepository.findById(id).orElseThrow(()-> new RuntimeException());
+        order.setStatus(OrderStatus.CANCELED);
+        return orderMapper.toDto(orderRepository.save(order));
+    }
+
+    @Override
+    public OrderResponse confirmOrder(Long id) {
+        Order order = orderRepository.findById(id).orElseThrow(()-> new RuntimeException());
+        order.setStatus(OrderStatus.CONFIRMED);
+        return orderMapper.toDto(orderRepository.save(order));
+    }
+
+
+    
 }
