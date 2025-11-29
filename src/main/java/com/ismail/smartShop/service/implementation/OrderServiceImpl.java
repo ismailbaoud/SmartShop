@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.ismail.smartShop.dto.client.response.ClientResponse;
 import com.ismail.smartShop.dto.order.request.OrderRequest;
 import com.ismail.smartShop.dto.order.response.OrderResponse;
+import com.ismail.smartShop.dto.orderItem.Request.OrderItemRequest;
 import com.ismail.smartShop.dto.product.response.ProductResponse;
 import com.ismail.smartShop.dto.promo.response.PromoResponse;
 import com.ismail.smartShop.mapper.ClientMapper;
@@ -17,6 +18,7 @@ import com.ismail.smartShop.model.Order;
 import com.ismail.smartShop.model.enums.NiveauFidelite;
 import com.ismail.smartShop.model.enums.OrderStatus;
 import com.ismail.smartShop.repository.OrderRepository;
+import com.ismail.smartShop.repository.ProductRepository;
 import com.ismail.smartShop.service.OrderService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
-
 
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
@@ -55,13 +56,23 @@ public class OrderServiceImpl implements OrderService {
         order.setClient(clientMapper.fromResponse(client));
         order.setDateOrder(LocalDateTime.now());
         order.setMontant_restant(totalTTC);
-        if(promoValid)  order.setPromo(orderRequest.getPromo());
+        if (promoValid) {
+            order.setPromo(orderRequest.getPromo());
+        } else {
+            order.setPromo("NUN");
+        }
         order.setStatus(OrderStatus.PANDING);
         order.setSubTotal(initTotal);
         order.setTotalTTC(totalTTC);
         order.setTva(tvaPercent);
 
         OrderResponse orderRes = orderMapper.toDto(orderRepository.save(order));
+    for (OrderItemRequest item : orderRequest.getItems()) {
+
+        productService.discountProducts(item.getProduct_id(), item.getQuantite());
+
+        orderItemService.createOrderItem(item, order);
+    }
         
         orderRequest.getItems().forEach(item -> 
             productService.discountProducts(item.getProduct_id(), item.getQuantite())
@@ -107,9 +118,15 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponse cancelOrder(Long id) {
-        Order order = orderRepository.findById(id).orElseThrow(()-> new RuntimeException());
+        Order order = orderRepository.findById(id) .orElseThrow(()-> new RuntimeException());
         order.setStatus(OrderStatus.CANCELED);
-        return orderMapper.toDto(orderRepository.save(order));
+        OrderResponse or = orderMapper.toDto(orderRepository.save(order));
+        order.getOrderItems().forEach(item -> {
+        Long productId = item.getProduct().getId();
+        Integer quantity = item.getQuantitie();
+        productService.addProducts(productId, quantity);
+    });
+        return or;
     }
 
     @Override
@@ -118,7 +135,4 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(OrderStatus.CONFIRMED);
         return orderMapper.toDto(orderRepository.save(order));
     }
-
-
-    
 }
