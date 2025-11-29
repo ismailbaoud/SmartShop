@@ -5,12 +5,11 @@ import java.util.List;
 
 import com.ismail.smartShop.model.Client;
 import com.ismail.smartShop.model.Payment;
-import com.ismail.smartShop.model.Promo;
 import com.ismail.smartShop.model.enums.OrderStatus;
 
 public record OrderResponse(
     Long id,
-    String promocode,
+    String promo,
     Client client,
     List<Payment> payments,
     LocalDateTime dateOrder,
