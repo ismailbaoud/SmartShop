@@ -54,6 +54,9 @@ public class Order {
 
     private Double totalTTC;
 
+    @OneToMany(mappedBy = "order" , cascade = CascadeType.ALL)
+    private List<OrderItem> orderItems;
+
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 

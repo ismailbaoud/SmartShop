@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ismail.smartShop.model.enums.NiveauFidelite;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -19,7 +20,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 @Entity
 @Table(name = "clients")
 @Data
@@ -31,14 +31,20 @@ public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
     String nom;
     String email;
-    
+
     @Enumerated(EnumType.STRING)
     private NiveauFidelite niveauDeFidelite;
 
+    @Builder.Default
+    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
     private Integer totalCommandes = 0;
-    private Double TotalDepense = 0.0;
+
+    @Builder.Default
+    @Column(nullable = false, columnDefinition = "DOUBLE PRECISION DEFAULT 0")
+    private Double totalDepense = 0.0;
 
     @OneToOne(mappedBy = "client")
     User user;

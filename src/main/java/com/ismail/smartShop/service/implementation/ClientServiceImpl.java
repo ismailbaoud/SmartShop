@@ -61,5 +61,16 @@ public class ClientServiceImpl implements ClientService{
     public void deleteClient(Long id) {
         clientRepository.deleteById(id);
     }
+
+    public Client changeFidelite(Client client) {
+        if(client.getNiveauDeFidelite().equals(NiveauFidelite.BASIC) && (client.getTotalCommandes() >= 3 || client.getTotalDepense() >=1000) ) {
+            client.setNiveauDeFidelite(NiveauFidelite.SILVER);
+        }else if (client.getNiveauDeFidelite().equals(NiveauFidelite.SILVER) && (client.getTotalCommandes() >=10 || client.getTotalDepense() >= 5000)) {
+            client.setNiveauDeFidelite(NiveauFidelite.GOLD);
+        }else if (client.getNiveauDeFidelite().equals(NiveauFidelite.GOLD) && (client.getTotalCommandes() >=20 || client.getTotalDepense() >= 15000)) {
+            client.setNiveauDeFidelite(NiveauFidelite.PLATINIUM);
+        }
+        return client;
+    }
     
 }

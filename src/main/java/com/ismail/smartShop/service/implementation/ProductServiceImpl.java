@@ -8,10 +8,12 @@ import org.springframework.stereotype.Service;
 import com.ismail.smartShop.dto.product.request.ProductRequest;
 import com.ismail.smartShop.dto.product.response.ProductResponse;
 import com.ismail.smartShop.exception.product.ProductNotFoundException;
+import com.ismail.smartShop.exception.product.QuantityNotAvailableException;
 import com.ismail.smartShop.mapper.ProductMapper;
 import com.ismail.smartShop.model.Product;
 import com.ismail.smartShop.repository.ProductRepository;
 import com.ismail.smartShop.service.ProductService;
+import com.jayway.jsonpath.PathNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -57,6 +59,10 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public Integer discountProducts(Long id, Integer pQty) {
+        Product p = productRepository.findById(id).orElseThrow(()-> new PathNotFoundException());
+        if(p.getStockQuantitie() < pQty) {
+            throw new QuantityNotAvailableException();
+        }
         return productRepository.discountStock(id, pQty);
     }
 
