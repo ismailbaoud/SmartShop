@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources.Chain.Strategy;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ismail.smartShop.model.enums.PaymentMethod;
 import com.ismail.smartShop.model.enums.PaymentStatus;
 
@@ -48,6 +50,7 @@ public class Payment {
 
     @ManyToOne
     @JoinColumn(name = "order_id")
+    @JsonBackReference
     private Order order;
 
 
