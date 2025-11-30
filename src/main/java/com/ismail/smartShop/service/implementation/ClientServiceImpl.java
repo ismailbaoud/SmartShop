@@ -8,10 +8,14 @@ import com.ismail.smartShop.dto.client.request.ClientRequest;
 import com.ismail.smartShop.dto.client.request.ClientFideliteChangeRequest;
 import com.ismail.smartShop.dto.client.response.ClientResponse;
 import com.ismail.smartShop.exception.client.ClientNotFoundException;
+import com.ismail.smartShop.helper.passwordHasher;
 import com.ismail.smartShop.mapper.ClientMapper;
 import com.ismail.smartShop.model.Client;
+import com.ismail.smartShop.model.User;
 import com.ismail.smartShop.model.enums.NiveauFidelite;
+import com.ismail.smartShop.model.enums.Role;
 import com.ismail.smartShop.repository.ClientRepository;
+import com.ismail.smartShop.repository.UserRepository;
 import com.ismail.smartShop.service.ClientService;
 
 import lombok.RequiredArgsConstructor;
@@ -22,12 +26,27 @@ public class ClientServiceImpl implements ClientService{
 
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
+    private final UserRepository userRepository;
+    private final passwordHasher passwordEncoder;
 
     @Override
     public ClientResponse createClient(ClientRequest cr) {
         Client client = clientMapper.toEntity(cr);
         client.setNiveauDeFidelite(NiveauFidelite.BASIC);
-        return clientMapper.toDto(clientRepository.save(client));
+        
+        Client savedClient = clientRepository.save(client);
+
+        User user = new User();
+        user.setUserName(cr.getEmail());
+        user.setPassword(passwordEncoder.hash(cr.getPassword()));
+        user.setRole(Role.CLIENT);
+        user.setClient(savedClient);
+
+        userRepository.save(user);
+
+        savedClient.setUser(user);
+
+        return clientMapper.toDto(savedClient);
     }
 
     @Override
