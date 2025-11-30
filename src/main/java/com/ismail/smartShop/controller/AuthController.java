@@ -32,4 +32,5 @@ public class AuthController {
         authService.logout(session);
         return ResponseEntity.ok("Logged out");
     }
+
 }
