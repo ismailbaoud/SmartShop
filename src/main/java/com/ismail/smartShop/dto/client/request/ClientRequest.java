@@ -18,4 +18,6 @@ public class ClientRequest {
     @NotBlank (message = "email is required")
     @Email (message = "you should enter correct email")
     private String email;
+
+    private String password;
 }
