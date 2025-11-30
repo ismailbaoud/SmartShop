@@ -2,13 +2,13 @@ package com.ismail.smartShop.service.implementation;
 
 import java.util.List;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ismail.smartShop.dto.client.request.ClientRequest;
 import com.ismail.smartShop.dto.client.request.ClientFideliteChangeRequest;
 import com.ismail.smartShop.dto.client.response.ClientResponse;
 import com.ismail.smartShop.exception.client.ClientNotFoundException;
+import com.ismail.smartShop.helper.passwordHasher;
 import com.ismail.smartShop.mapper.ClientMapper;
 import com.ismail.smartShop.model.Client;
 import com.ismail.smartShop.model.User;
@@ -27,7 +27,7 @@ public class ClientServiceImpl implements ClientService{
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final passwordHasher passwordEncoder;
 
     @Override
     public ClientResponse createClient(ClientRequest cr) {
@@ -38,7 +38,7 @@ public class ClientServiceImpl implements ClientService{
 
         User user = new User();
         user.setUserName(cr.getEmail());
-        user.setPassword(passwordEncoder.encode(cr.getPassword()));
+        user.setPassword(passwordEncoder.hash(cr.getPassword()));
         user.setRole(Role.CLIENT);
         user.setClient(savedClient);
 
