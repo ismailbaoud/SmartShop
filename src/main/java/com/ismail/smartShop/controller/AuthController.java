@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ismail.smartShop.dto.auth.request.LoginRequest;
 import com.ismail.smartShop.model.User;
-import com.ismail.smartShop.service.AuthService;
 import com.ismail.smartShop.service.implementation.AuthServiceImpl;
 
 import jakarta.servlet.http.HttpSession;
