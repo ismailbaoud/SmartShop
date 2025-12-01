@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import com.ismail.smartShop.dto.orderItem.Request.OrderItemRequest;
 import com.ismail.smartShop.dto.orderItem.response.OrderItemResponse;
 import com.ismail.smartShop.exception.product.ProductNotFoundException;
-import com.ismail.smartShop.mapper.orderItemMapper;
+import com.ismail.smartShop.mapper.OrderItemMapper;
 import com.ismail.smartShop.model.Order;
 import com.ismail.smartShop.model.OrderItem;
 import com.ismail.smartShop.model.Product;
@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class OrderItemServiceImpl implements OrderItemService {
 
     private final OrderItemRepository orderItemRepository;
-    private final orderItemMapper orderItemMapper;
+    private final OrderItemMapper orderItemMapper;
     private final ProductRepository productRepository;
     
     @Override

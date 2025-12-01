@@ -1,6 +1,5 @@
 package com.ismail.smartShop.model;
 
-import java.math.BigDecimal;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

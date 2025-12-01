@@ -14,6 +14,7 @@ import com.ismail.smartShop.dto.client.request.ClientRequest;
 import com.ismail.smartShop.dto.client.response.ClientResponse;
 import com.ismail.smartShop.service.implementation.ClientServiceImpl;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -75,5 +76,11 @@ public class ClientController {
         return ResponseEntity.ok().body(clientResponse);
     }
 
-    
+    @GetMapping("/profile")
+    @RequireAuth
+    @RequireClient
+    public ResponseEntity<ClientResponse> getProfile(HttpSession session) {
+        ClientResponse client = clientService.getProfile(session);
+        return ResponseEntity.ok().body(client);
+    }
 }

@@ -1,5 +1,6 @@
 package com.ismail.smartShop.model;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -12,7 +13,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -52,4 +52,7 @@ public class Client {
     @OneToMany(mappedBy = "client")
     @JsonBackReference
     private List<Order> orders;
+
+    private LocalDateTime firstOrderDate;
+    private LocalDateTime lastOrderDate;
 }

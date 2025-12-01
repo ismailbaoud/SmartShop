@@ -12,13 +12,15 @@ import com.ismail.smartShop.dto.order.response.OrderResponse;
 import com.ismail.smartShop.dto.orderItem.Request.OrderItemRequest;
 import com.ismail.smartShop.dto.product.response.ProductResponse;
 import com.ismail.smartShop.dto.promo.response.PromoResponse;
+import com.ismail.smartShop.exception.client.ClientNotFoundException;
 import com.ismail.smartShop.mapper.ClientMapper;
 import com.ismail.smartShop.mapper.OrderMapper;
+import com.ismail.smartShop.model.Client;
 import com.ismail.smartShop.model.Order;
 import com.ismail.smartShop.model.enums.NiveauFidelite;
 import com.ismail.smartShop.model.enums.OrderStatus;
+import com.ismail.smartShop.repository.ClientRepository;
 import com.ismail.smartShop.repository.OrderRepository;
-import com.ismail.smartShop.repository.ProductRepository;
 import com.ismail.smartShop.service.OrderService;
 
 import lombok.RequiredArgsConstructor;
@@ -34,7 +36,7 @@ public class OrderServiceImpl implements OrderService {
     private final PromoServiceImpl promoService;
     private final ProductServiceImpl productService;
     private final OrderItemServiceImpl orderItemService;
-
+    private final ClientRepository clientRepository;
 
     @Override
     public OrderResponse createOrder(OrderRequest orderRequest) {
@@ -82,6 +84,13 @@ public class OrderServiceImpl implements OrderService {
             orderItemService.createOrderItem(item, order)
         );
 
+
+        Client clientRes = clientRepository.findById(client.id()).orElseThrow(()-> new ClientNotFoundException());
+        if(clientRes.getFirstOrderDate() == null) {
+            clientRes.setFirstOrderDate(LocalDateTime.now());
+        }
+        clientRes.setLastOrderDate(LocalDateTime.now());
+        clientRepository.save(clientRes);
         return orderRes;
     }
 

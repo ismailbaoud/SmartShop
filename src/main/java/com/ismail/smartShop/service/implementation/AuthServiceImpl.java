@@ -1,6 +1,5 @@
 package com.ismail.smartShop.service.implementation;
 
-import java.net.http.HttpRequest;
 
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
-    private final passwordHasher passwordHasher; // custom bcrypt helper
+    private final passwordHasher passwordHasher;
 
     @Override
     public User login(LoginRequest request, HttpSession session) {
@@ -26,8 +25,8 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Invalid username or password");
         }
 
-        session.setAttribute("USER", user);   // store user object
-        session.setMaxInactiveInterval(60 * 60); // 1 hour session
+        session.setAttribute("USER", user);
+        session.setMaxInactiveInterval(60 * 60);
 
         return user;
     }

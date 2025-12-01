@@ -7,7 +7,7 @@ import com.ismail.smartShop.dto.orderItem.response.OrderItemResponse;
 import com.ismail.smartShop.model.OrderItem;
 
 @Mapper(componentModel = "spring")
-public interface orderItemMapper {
+public interface OrderItemMapper {
     OrderItem toEntity(OrderItemRequest oiReq);
     OrderItemResponse toDto(OrderItem oi);
 }
