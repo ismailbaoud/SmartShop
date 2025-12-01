@@ -10,7 +10,7 @@ public record ClientResponse(
     String email,
 
     Integer totalCommandes,
-    Double TotalDepense,
+    Double totalDepense,
 
     NiveauFidelite niveauDeFidelite,
 
