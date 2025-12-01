@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ismail.smartShop.annotation.RequireAdmin;
 import com.ismail.smartShop.annotation.RequireAuth;
-import com.ismail.smartShop.annotation.RequireClient;
 import com.ismail.smartShop.dto.product.request.ProductRequest;
 import com.ismail.smartShop.dto.product.response.ProductResponse;
 import com.ismail.smartShop.service.ProductService;
@@ -42,7 +41,6 @@ public class ProductController {
     
     @GetMapping
     @RequireAuth
-    @RequireAdmin
     public ResponseEntity<List<ProductResponse>> getAllProducts() {
         return ResponseEntity.ok().body(productService.getAllProducts());
     }
