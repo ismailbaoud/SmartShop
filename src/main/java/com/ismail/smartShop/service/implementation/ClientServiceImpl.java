@@ -18,6 +18,7 @@ import com.ismail.smartShop.repository.ClientRepository;
 import com.ismail.smartShop.repository.UserRepository;
 import com.ismail.smartShop.service.ClientService;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -90,6 +91,15 @@ public class ClientServiceImpl implements ClientService{
             client.setNiveauDeFidelite(NiveauFidelite.PLATINIUM);
         }
         return client;
+    }
+
+    public ClientResponse getProfile(HttpSession session) {
+        User user = (User) session.getAttribute("USER");
+        Long userId = user.getId();
+        Client cRes =  clientRepository.findById(userId).orElseThrow(()-> new ClientNotFoundException());
+        System.out.println(cRes.getTotalDepense());
+        return clientMapper.toDto(cRes);
+
     }
     
 }
