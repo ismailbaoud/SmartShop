@@ -6,16 +6,25 @@ import org.springframework.stereotype.Service;
 
 import com.ismail.smartShop.dto.user.request.UserRequest;
 import com.ismail.smartShop.dto.user.response.UserResponse;
+import com.ismail.smartShop.helper.passwordHasher;
+import com.ismail.smartShop.mapper.UserMapper;
+import com.ismail.smartShop.repository.UserRepository;
 import com.ismail.smartShop.service.UserService;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
 
-
+    private final UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final passwordHasher passwordHasher;
     @Override
     public UserResponse createUser(UserRequest ur) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createUser'");
+        String passHashed = passwordHasher.hash(ur.getPassword());
+        ur.setPassword(passHashed);
+        return userMapper.toDto(userRepository.save(userMapper.toEntity(ur)));
     }
 
     @Override
