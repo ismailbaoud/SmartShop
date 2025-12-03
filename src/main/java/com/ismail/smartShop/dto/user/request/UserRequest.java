@@ -1,5 +1,7 @@
 package com.ismail.smartShop.dto.user.request;
 
+import com.ismail.smartShop.model.enums.Role;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,13 +11,13 @@ import lombok.NoArgsConstructor;
 public class UserRequest {
 
     @NotBlank (message = "user name is required")
-    private String username;
+    private String userName;
 
     @NotBlank (message = "password is required")
     private String password;
 
     @NotBlank (message = "role is required")
-    private String role;
+    private Role role;
 
     private Long client_id;
 }
