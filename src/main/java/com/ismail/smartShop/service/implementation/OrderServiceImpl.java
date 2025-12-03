@@ -42,39 +42,39 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponse createOrder(OrderRequest orderRequest) {
         ClientResponse client = clientService.getClientById(orderRequest.getClient_id());
         Boolean promoValid = promoService.validatePromoCode(orderRequest.getPromo());
+
         Double initTotal = orderRequest.getItems().stream()
-        .mapToDouble(item -> {
-        ProductResponse product = productService.getProductById(item.getProduct_id());
-        return product.prixUnit() * item.getQuantite();
-        })
-        .sum();        
+            .mapToDouble(item -> {
+                ProductResponse product = productService.getProductById(item.getProduct_id());
+                return product.prixUnit() * item.getQuantite();
+            }).sum();        
+        
         Double htAfterFidelite = totalAfterFideliteHandle(client, initTotal);
         Double htAfterPromo = promoValid ? totalAfterCodePromo(htAfterFidelite, orderRequest.getPromo()) : htAfterFidelite;
         Double tvaPercent = orderRequest.getTva() != null ? orderRequest.getTva() : 20.0;
         Double totalTTC = htAfterPromo * (1 + tvaPercent / 100);
-        
 
         Order order = orderMapper.toEntity(orderRequest);
         order.setClient(clientMapper.fromResponse(client));
         order.setDateOrder(LocalDateTime.now());
         order.setMontant_restant(totalTTC);
+        order.setStatus(OrderStatus.PANDING);
+        order.setSubTotal(initTotal);
+        order.setTotalTTC(totalTTC);
+        order.setTva(tvaPercent);
         if (promoValid) {
             order.setPromo(orderRequest.getPromo());
         } else {
             order.setPromo("NUN");
         }
-        order.setStatus(OrderStatus.PANDING);
-        order.setSubTotal(initTotal);
-        order.setTotalTTC(totalTTC);
-        order.setTva(tvaPercent);
-
+        
         OrderResponse orderRes = orderMapper.toDto(orderRepository.save(order));
-    for (OrderItemRequest item : orderRequest.getItems()) {
+        for (OrderItemRequest item : orderRequest.getItems()) {
 
-        productService.discountProducts(item.getProduct_id(), item.getQuantite());
+            productService.discountProducts(item.getProduct_id(), item.getQuantite());
 
-        orderItemService.createOrderItem(item, order);
-    }
+            orderItemService.createOrderItem(item, order);
+        }
         
         orderRequest.getItems().forEach(item -> 
             productService.discountProducts(item.getProduct_id(), item.getQuantite())
@@ -83,7 +83,6 @@ public class OrderServiceImpl implements OrderService {
         orderRequest.getItems().forEach(item -> 
             orderItemService.createOrderItem(item, order)
         );
-
 
         Client clientRes = clientRepository.findById(client.id()).orElseThrow(()-> new ClientNotFoundException());
         if(clientRes.getFirstOrderDate() == null) {
