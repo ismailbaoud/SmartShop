@@ -53,7 +53,7 @@ public class ClientController {
 
     @GetMapping("/{id}")
     @RequireAuth
-    @RequireClient
+    @RequireAdmin
     public ResponseEntity<ClientResponse> getClientById(@PathVariable Long id) {
         ClientResponse client = clientService.getClientById(id);
         return ResponseEntity.ok().body(client);
