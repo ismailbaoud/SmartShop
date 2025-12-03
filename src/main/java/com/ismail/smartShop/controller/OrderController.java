@@ -7,9 +7,6 @@ import com.ismail.smartShop.annotation.RequireAdmin;
 import com.ismail.smartShop.annotation.RequireAuth;
 import com.ismail.smartShop.dto.order.request.OrderRequest;
 import com.ismail.smartShop.dto.order.response.OrderResponse;
-import com.ismail.smartShop.exception.client.ClientNotFoundException;
-import com.ismail.smartShop.model.Client;
-import com.ismail.smartShop.repository.ClientRepository;
 import com.ismail.smartShop.service.implementation.OrderServiceImpl;
 
 import jakarta.validation.Valid;
@@ -33,7 +30,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class OrderController {
 
     private final OrderServiceImpl orderService;
-    private final ClientRepository clientRepository;
     
     @PostMapping
     @RequireAuth

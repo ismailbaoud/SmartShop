@@ -7,9 +7,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ismail.smartShop.dto.auth.request.LoginRequest;
+import com.ismail.smartShop.dto.user.request.UserRequest;
+import com.ismail.smartShop.dto.user.response.UserResponse;
 import com.ismail.smartShop.model.User;
 import com.ismail.smartShop.service.implementation.AuthServiceImpl;
-
+import com.ismail.smartShop.service.implementation.UserServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
@@ -17,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
+
+    private final UserServiceImpl userService;
 
     private final AuthServiceImpl authService;
 
@@ -30,6 +34,11 @@ public class AuthController {
     public ResponseEntity<?> logout(HttpSession session) {
         authService.logout(session);
         return ResponseEntity.ok("Logged out");
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest request) {
+        return ResponseEntity.ok().body(userService.createUser(request));
     }
 
 }
