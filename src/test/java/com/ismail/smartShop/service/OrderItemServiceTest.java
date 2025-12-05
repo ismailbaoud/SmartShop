@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -109,7 +108,7 @@ class OrderItemServiceTest {
         orderItemRequest.setProduct_id(999L);
 
         // Act & Assert
-        assertThrows(ProductNotFoundException.class, 
+        assertThrows(ProductNotFoundException.class,
             () -> orderItemService.createOrderItem(orderItemRequest, order));
         verify(productRepository, times(1)).findById(999L);
         verify(orderItemRepository, never()).save(any(OrderItem.class));
@@ -120,9 +119,9 @@ class OrderItemServiceTest {
         // Arrange
         OrderItem orderItem2 = new OrderItem();
         orderItem2.setId(2L);
-        
+
         List<OrderItem> orderItems = Arrays.asList(orderItem, orderItem2);
-        
+
         when(orderItemRepository.findAll()).thenReturn(orderItems);
         when(orderItemMapper.toDto(any(OrderItem.class))).thenReturn(orderItemResponse);
 
