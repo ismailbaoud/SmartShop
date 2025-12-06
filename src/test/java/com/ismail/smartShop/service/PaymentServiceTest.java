@@ -128,7 +128,7 @@ class PaymentServiceTest {
         // Arrange
         paymentRequest.setAmount(1000.0);
         payment.setAmount(1000.0);
-        
+
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
         when(paymentMapper.toEntity(paymentRequest)).thenReturn(payment);
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
@@ -158,9 +158,9 @@ class PaymentServiceTest {
         payment.setAmount(1500.0);
 
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
+        RuntimeException exception = assertThrows(RuntimeException.class,
             () -> paymentService.createPayment(1L, paymentRequest));
-        
+
         assertTrue(exception.getMessage().contains("this amount is haist than the rest amoun"));
         verify(paymentRepository, never()).save(any(Payment.class));
     }
@@ -171,7 +171,7 @@ class PaymentServiceTest {
         when(orderRepository.findById(999L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, 
+        assertThrows(RuntimeException.class,
             () -> paymentService.createPayment(999L, paymentRequest));
         verify(orderRepository, times(1)).findById(999L);
         verify(paymentRepository, never()).save(any(Payment.class));
@@ -183,9 +183,9 @@ class PaymentServiceTest {
         Payment payment2 = new Payment();
         payment2.setId(2L);
         payment2.setOrder(order);
-        
+
         List<Payment> payments = Arrays.asList(payment, payment2);
-        
+
         when(paymentRepository.findAll()).thenReturn(payments);
         when(paymentMapper.toDto(any(Payment.class))).thenReturn(paymentResponse);
 
@@ -202,10 +202,10 @@ class PaymentServiceTest {
         // Arrange
         PaymentStatusRequest statusRequest = new PaymentStatusRequest();
         statusRequest.setStatus("ENCAISSE");
-        
+
         payment.setOrder(order);
-        List<Payment> payments = Arrays.asList(payment);
-        
+        List<Payment> payments = List.of(payment);
+
         when(paymentRepository.findAll()).thenReturn(payments);
         when(paymentRepository.save(payment)).thenReturn(payment);
         when(paymentMapper.toDto(payment)).thenReturn(paymentResponse);
@@ -225,11 +225,11 @@ class PaymentServiceTest {
         // Arrange
         PaymentStatusRequest statusRequest = new PaymentStatusRequest();
         statusRequest.setStatus("ENCAISSE");
-        
+
         when(paymentRepository.findAll()).thenReturn(new ArrayList<>());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, 
+        assertThrows(RuntimeException.class,
             () -> paymentService.updatePaymentStatus(999L, 999L, statusRequest));
         verify(paymentRepository, times(1)).findAll();
         verify(paymentRepository, never()).save(any(Payment.class));
@@ -240,7 +240,7 @@ class PaymentServiceTest {
         // Arrange
         paymentRequest.setAmount(1000.0);
         payment.setAmount(1000.0);
-        
+
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
         when(paymentMapper.toEntity(paymentRequest)).thenReturn(payment);
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
