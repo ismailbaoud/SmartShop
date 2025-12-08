@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 public record PromoResponse(
         Long id,
-        String PromoCode,
         Integer discountPercent,
         String code,
         LocalDateTime expiresAt,

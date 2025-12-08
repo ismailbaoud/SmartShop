@@ -5,7 +5,7 @@ import com.ismail.smartShop.model.enums.Role;
 
 public record UserResponse(
     Long id,
-    String username,
+    String userName,
     Role role,
     Client client
 ){}

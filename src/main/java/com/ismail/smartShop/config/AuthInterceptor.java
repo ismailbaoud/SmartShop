@@ -19,9 +19,6 @@ public class AuthInterceptor implements HandlerInterceptor {
 
 @Override
 public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-    if (!(handler instanceof HandlerMethod)) {
-        return true; // allow static resources
-    }
 
     HandlerMethod hm = (HandlerMethod) handler;
     HttpSession session = request.getSession(false);

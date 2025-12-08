@@ -50,7 +50,6 @@ public class Client {
     User user;
 
     @OneToMany(mappedBy = "client")
-    @JsonBackReference
     private List<Order> orders;
 
     private LocalDateTime firstOrderDate;

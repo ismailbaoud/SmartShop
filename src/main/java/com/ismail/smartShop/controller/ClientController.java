@@ -68,19 +68,13 @@ public class ClientController {
         return ResponseEntity.ok().body(clientResponse);
     }
 
-    @PutMapping("/{id}/fidelite")
-    @RequireAuth
-    @RequireAdmin
-    public ResponseEntity<ClientResponse> changeFidelite(@Valid @PathVariable Long id, @RequestBody ClientFideliteChangeRequest fidelite) {
-        ClientResponse clientResponse = clientService.changeNiveauDeFidelite(id, fidelite);
-        return ResponseEntity.ok().body(clientResponse);
-    }
 
-    @GetMapping("/profile")
-    @RequireAuth
-    @RequireClient
-    public ResponseEntity<ClientResponse> getProfile(HttpSession session) {
-        ClientResponse client = clientService.getProfile(session);
-        return ResponseEntity.ok().body(client);
-    }
+
+    // @GetMapping("/profile")
+    // @RequireAuth
+    // @RequireClient
+    // public ResponseEntity<ClientResponse> getProfile(HttpSession session) {
+    //     ClientResponse client = clientService.getProfile(session);
+    //     return ResponseEntity.ok().body(client);
+    // }
 }

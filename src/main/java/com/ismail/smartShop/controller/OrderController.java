@@ -51,10 +51,10 @@ public class OrderController {
         return ResponseEntity.ok().body(orderService.getAllOrdersOfClient(id));
     }
     
-    @PutMapping("/{id}/cancle")
+    @PutMapping("/{id}/cancel")
     @RequireAuth
     @RequireAdmin
-    public ResponseEntity<OrderResponse> cancleOrder(@PathVariable Long id) {
+    public ResponseEntity<OrderResponse> cancelOrder(@PathVariable Long id) {
         return ResponseEntity.ok().body(orderService.cancelOrder(id));
     }
     

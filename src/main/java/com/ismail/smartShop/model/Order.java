@@ -36,7 +36,6 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "client_id")
-    @JsonManagedReference
     private Client client;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)

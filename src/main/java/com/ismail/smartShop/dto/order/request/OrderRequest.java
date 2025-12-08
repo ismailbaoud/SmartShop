@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OrderRequest {
     private Long client_id;
+    @Nullable
     private String promo;
     @Nullable
     private Double tva;

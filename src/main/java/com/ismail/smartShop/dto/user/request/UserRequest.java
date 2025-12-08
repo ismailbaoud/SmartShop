@@ -18,6 +18,4 @@ public class UserRequest {
 
     @NotBlank (message = "role is required")
     private Role role;
-
-    private Long client_id;
 }
