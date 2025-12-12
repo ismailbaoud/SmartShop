@@ -8,4 +8,5 @@ public record UserResponse(
     String userName,
     Role role,
     Client client
+    
 ){}

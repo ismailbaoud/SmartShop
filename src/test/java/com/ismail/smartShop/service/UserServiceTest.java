@@ -68,7 +68,7 @@ class UserServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals("admin@test.com", result.username());
+        assertEquals("admin@test.com", result.userName());
         assertEquals(Role.CLIENT, result.role());
         verify(passwordHasher, times(1)).hash("password123");
         verify(userRepository, times(1)).save(user);

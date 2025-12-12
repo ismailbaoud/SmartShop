@@ -54,7 +54,6 @@ class PromoServiceTest {
 
         promoResponse = new PromoResponse(
             1L,
-            "PROMO-TEST",
             10,
             "PROMO-TEST",
             LocalDateTime.now().plusDays(30),

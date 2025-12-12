@@ -147,7 +147,7 @@ public class OrderServiceTest {
             20.0,
             600.0,
             OrderStatus.PANDING,
-            600.0
+            600.0, null
         );
     }
 
@@ -181,7 +181,7 @@ public class OrderServiceTest {
         // Arrange
         com.ismail.smartShop.dto.promo.response.PromoResponse promoResponse =
             new com.ismail.smartShop.dto.promo.response.PromoResponse(
-                1L, "PROMO-TEST", 10, "PROMO-TEST", LocalDateTime.now().plusDays(30), 0
+                1L, 10, "PROMO-TEST", LocalDateTime.now().plusDays(30), 0
             );
 
         when(clientService.getClientById(1L)).thenReturn(clientResponse);
